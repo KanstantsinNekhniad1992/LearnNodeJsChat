@@ -1,0 +1,13 @@
+node_modules/npm/node_modules/columnify/node_modules/strip-ansi/node_modules
+dist
+.tmp
+bower_components
+../Server/.idea
+node.exe
+node_etw_provider.man
+node_perfctr_provider.man
+nodevars.bat
+npm
+npm.cmd
+.idea
+node_modules
