@@ -2,7 +2,7 @@ var express = require('express');
 var http = require('http');
 var config = require('./config');
 var log = require('./libs/log')(module);
-var favicon = require('serve-favicon');
+//var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -19,7 +19,8 @@ app.set('views', __dirname+'/views');
 app.set('view engine', 'ejs');
 require('./routes')(app);
 app.use(require('./middleware/sendHttpError'));
-app.use(router);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
@@ -49,8 +50,6 @@ app.use(function(err, req, res, next) {
 
 app.engine('ejs', require('ejs-locals'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use(session({
@@ -66,9 +65,9 @@ app.use(session({
 }));
 
 app.use(express.static(path.join(__dirname, 'public')));
-
 app.use(function(req, res, next) {
     var session = req.session;
+    session.user =  null;
     if (session.views) {
         session.views++;
         res.setHeader('Content-Type', 'text/html');
@@ -80,6 +79,8 @@ app.use(function(req, res, next) {
         res.end('welcome to the session demo. refresh!');
     }
 });
+app.use(require('./middleware/loadUser'));
+app.use(router);
 
 http.createServer(app).listen(app.get('port'), function() {
     log.info('Express is listening on port '+ config.get('port'));
